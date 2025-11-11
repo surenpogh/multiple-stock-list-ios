@@ -9,11 +9,17 @@ import SwiftUI
 
 struct SymbolDetailView: View {
     @StateObject private var viewModel: SymbolDetailViewModel
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
     
     init(symbolId: String, stockDataService: StockDataService) {
         _viewModel = StateObject(
             wrappedValue: SymbolDetailViewModel(symbolId: symbolId, stockDataService: stockDataService)
         )
+    }
+    
+    private var themeColors: ThemeColors {
+        themeManager.colors(for: colorScheme)
     }
     
     var body: some View {
@@ -28,7 +34,7 @@ struct SymbolDetailView: View {
                             HStack(alignment: .firstTextBaseline) {
                                 Text(String(format: "$%.2f", stock.currentPrice))
                                     .font(.system(size: 44, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.primary)
+                                    .foregroundColor(themeColors.primaryText)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
                                 
@@ -38,7 +44,7 @@ struct SymbolDetailView: View {
                                     Text(viewModel.priceChangeIndicator + " " + viewModel.priceChangeText)
                                         .font(.headline)
                                 }
-                                .foregroundStyle(stock.isPositiveChange ? .green : .red)
+                                .foregroundColor(stock.isPositiveChange ? themeColors.positive : themeColors.negative)
                             }
                         }
                     }
@@ -51,15 +57,17 @@ struct SymbolDetailView: View {
                             if !stock.description.isEmpty {
                                 Text(stock.description)
                                     .font(.body)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundColor(themeColors.secondaryText)
                                     .lineSpacing(3)
                             }
                             
                             if !stock.detailDescription.isEmpty {
-                                Divider().padding(.vertical, 2)
+                                Divider()
+                                    .background(themeColors.divider)
+                                    .padding(.vertical, 2)
                                 Text(stock.detailDescription)
                                     .font(.body)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundColor(themeColors.secondaryText)
                                     .lineSpacing(3)
                             }
                         }
@@ -75,7 +83,7 @@ struct SymbolDetailView: View {
                                     Caption("Previous Price")
                                     Text(String(format: "$%.2f", stock.previousPrice))
                                         .font(.headline)
-                                        .foregroundStyle(.primary)
+                                        .foregroundColor(themeColors.primaryText)
                                 }
                                 
                                 Spacer()
@@ -84,7 +92,7 @@ struct SymbolDetailView: View {
                                     Caption("Last Updated")
                                     Text(stock.lastUpdateTime, style: .time)
                                         .font(.headline)
-                                        .foregroundStyle(.primary)
+                                        .foregroundColor(themeColors.primaryText)
                                 }
                             }
                         }
@@ -93,53 +101,60 @@ struct SymbolDetailView: View {
                     Card {
                         Text("Stock not found")
                             .font(.headline)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(themeColors.secondaryText)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
             .padding(16)
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(themeColors.groupedBackground.ignoresSafeArea())
         .navigationTitle(viewModel.stock?.name ?? "")
         .navigationBarTitleDisplayMode(.large)
+        .themeColors(themeColors)
     }
 }
 
 // MARK: - Reusable Views
 
 private struct Card<Content: View>: View {
+    @Environment(\.themeColors) private var themeColors
     @ViewBuilder var content: Content
+    
     var body: some View {
         content
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
+                    .fill(themeColors.cardBackground)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                    .stroke(themeColors.cardBorder, lineWidth: 1)
             )
     }
 }
 
 private struct SectionTitle: View {
+    @Environment(\.themeColors) private var themeColors
     let text: String
     init(_ text: String) { self.text = text }
+    
     var body: some View {
         Text(text)
             .font(.title3.weight(.semibold))
-            .foregroundStyle(.primary)
+            .foregroundColor(themeColors.primaryText)
     }
 }
 
 private struct Caption: View {
+    @Environment(\.themeColors) private var themeColors
     let text: String
     init(_ text: String) { self.text = text }
+    
     var body: some View {
         Text(text)
             .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .foregroundColor(themeColors.secondaryText)
     }
 }

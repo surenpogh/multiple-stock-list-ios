@@ -13,6 +13,8 @@ struct TopBarView: View {
     let toggleButtonText: String
     let onToggle: () -> Void
     
+    @Environment(\.themeColors) private var themeColors
+    
     var body: some View {
         HStack {
             // Connection Status
@@ -21,7 +23,7 @@ struct TopBarView: View {
                     .font(.caption)
                 Text(connectionStatusText)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeColors.secondaryText)
             }
             
             Spacer()
@@ -33,12 +35,12 @@ struct TopBarView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 8)
-                    .background(toggleButtonText == "Stop" ? Color.red : Color.green)
+                    .background(toggleButtonText == "Stop" ? themeColors.negative : themeColors.connected)
                     .cornerRadius(8)
             }
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(uiColor: .systemBackground))
+        .background(themeColors.secondaryBackground)
     }
 }

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct StockRowView: View {
     let stock: StockSymbol
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.themeColors) private var themeColors
     
     var body: some View {
         HStack {
@@ -17,10 +19,11 @@ struct StockRowView: View {
                 Text(stock.name)
                     .font(.title)
                     .fontWeight(.semibold)
+                    .foregroundColor(themeColors.primaryText)
                 
                 Text(stock.description)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeColors.secondaryText)
                     .lineLimit(1)
             }
             
@@ -31,6 +34,7 @@ struct StockRowView: View {
                 Text(String(format: "$%.2f", stock.currentPrice))
                     .font(.headline)
                     .fontWeight(.bold)
+                    .foregroundColor(themeColors.primaryText)
                 
                 HStack(spacing: 2) {
                     Text(stock.isPositiveChange ? "↑" : "↓")
@@ -39,10 +43,11 @@ struct StockRowView: View {
                     Text(String(format: "$%.2f (%.2f%%)", abs(stock.priceChange), abs(stock.priceChangePercentage)))
                         .font(.caption)
                 }
-                .foregroundColor(stock.isPositiveChange ? .green : .red)
+                .foregroundColor(stock.isPositiveChange ? themeColors.positive : themeColors.negative)
             }
         }
         .padding(.vertical, 8)
         .padding(.horizontal)
+        .background(themeColors.secondaryBackground)
     }
 }

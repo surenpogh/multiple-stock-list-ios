@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct MultipleStockListApp: App {
     @StateObject private var stockDataService = StockDataService()
+    @StateObject private var themeManager = ThemeManager()
     @State private var navigationPath = NavigationPath()
     
     var body: some Scene {
@@ -28,6 +29,8 @@ struct MultipleStockListApp: App {
             .onOpenURL { url in
                 handleDeepLink(url)
             }
+            .environmentObject(themeManager)
+            .preferredColorScheme(themeManager.selectedTheme.colorScheme)
         }
     }
     

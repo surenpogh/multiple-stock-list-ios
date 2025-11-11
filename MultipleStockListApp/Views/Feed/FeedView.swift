@@ -9,9 +9,15 @@ import SwiftUI
 
 struct FeedView: View {
     @StateObject private var viewModel: FeedViewModel
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var themeManager: ThemeManager
     
     init(stockDataService: StockDataService) {
         _viewModel = StateObject(wrappedValue: FeedViewModel(stockDataService: stockDataService))
+    }
+    
+    private var themeColors: ThemeColors {
+        themeManager.colors(for: colorScheme)
     }
     
     var body: some View {
@@ -25,6 +31,7 @@ struct FeedView: View {
             )
             
             Divider()
+                .background(themeColors.divider)
             
             // Stock List
             List(viewModel.stocks) { stock in
@@ -34,11 +41,26 @@ struct FeedView: View {
                 .padding(.trailing, 12)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.visible)
-                
+                .listRowBackground(themeColors.secondaryBackground)
             }
             .listStyle(.plain)
+            .background(themeColors.primaryBackground)
+            .scrollContentBackground(.hidden)
         }
+        .background(themeColors.primaryBackground)
         .navigationTitle("Stock Feed")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    themeManager.toggleTheme()
+                } label: {
+                    Text(themeManager.selectedTheme.displayName)
+                        .foregroundColor(themeColors.accent)
+                        .fontWeight(.medium)
+                }
+            }
+        }
+        .themeColors(themeColors)
     }
 }
